@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>王者农场专业务农 | 终极极速辅助器</title>
+  <style>
+    :root { 
+      --primary: #2e7d32; 
+      --primary-light: #e8f5e9; 
+      --text-main: #333; 
+      --text-muted: #666666;
+      --border: #e0e0e0; 
+      --danger: #d32f2f; 
+      --warning: #ed6c02; 
+    }
+    body { font-family: -apple-system, sans-serif; background: #f4f7f6; padding: 15px; color: var(--text-main); margin: 0; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { text-align: center; color: var(--primary); margin-bottom: 25px; font-size: 26px; }
+
+    /* 新增：头部标语的样式 */
+    .header-slogan { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 25px; letter-spacing: 1px; }
+
+    .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 12px;}
+    h2 { margin: 0; color: var(--primary); font-size: 18px; }
+    
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .time-btn { flex: 1; min-width: 60px; padding: 10px 0; border: 1px solid var(--primary); background: transparent; color: var(--primary); border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; }
+    .time-btn.active { background: var(--primary); color: white; }
+    
+    input[type="datetime-local"], input[type="text"], input[type="number"], select { height: 40px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box; width: 100%; background: #fff; }
+    .sync-btn { height: 40px; padding: 0 15px; background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; border: none; border-radius: 8px; white-space: nowrap; }
+    
+    .dnw-card { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .dnw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: bold; font-size: 14px; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 22px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    /* 实时响应结果区 */
+    #resultPanel { padding: 15px; background: var(--primary-light); border-radius: 8px; border: 1px solid #c8e6c9; margin-top: 5px; }
+    .timeline { border-left: 2px solid var(--primary); margin-left: 10px; padding-left: 15px; margin-top: 15px; }
+    .node { position: relative; margin-bottom: 15px; }
+    .node::before { content: ''; position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; border: 2px solid #fff; }
+    .node.danger::before { background: var(--danger); }
+    .node.warning::before { background: var(--warning); } 
+    .time-label { font-weight: bold; color: var(--primary); font-size: 15px; }
+
+    /* ================= 账号管家样式 ================= */
+    .ios-btn { height: 32px; padding: 0 12px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid #e0e0e0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-reset { background: #fff; color: #d32f2f; border: 1px solid #ff4d4f; }
+    .btn-add { background: #2e7d32; color: #fff; border: none; font-size: 18px; padding: 0 14px; }
+    .table-scroll { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid var(--border); }
+    .account-table { min-width: 1000px; } 
+    
+    .acc-tr { display: grid; grid-template-columns: 6% 12% 5% 5% 10% 8% 8% 8% 8% 8% 8% 4.5% 4.5% 5%; align-items: center; border-bottom: 1px solid #f2f2f2; min-height: 40px; transition: background-color 0.3s; }
+    
+    .acc-td { padding: 4px 1px; display: flex; justify-content: center; align-items: center; width: 100%; box-sizing: border-box; overflow: hidden; position: relative; }
+    .acc-td input { width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-size: 12px; padding: 0; outline: none; box-sizing: border-box; color: #333; transition: color 0.3s; }
+    
+    /* 🌟 极致精准：任务和0祝福时，仅名字格子变灰，无划线，其他格子不变 */
+    .name-completed .name-td { background-color: #c1c1c1 !important; }
+    .name-completed .name-td input { color: #000000 !important; text-decoration: none !important; }
+    /* 配合一下：如果完成了任务但有作物，名字格子的颜色稍微暖一点点，保持和谐 */
+    .name-completed .name-td.has-fruit { background-color: #f0ebd6 !important; }
+    
+    .has-fruit { background-color: #fffac0; }
+    .name-completed .has-fruit { background-color: #ffdc51; } /* 完成状态下果实背景变暗 */
+
+    .custom-cb { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #c7c7cc; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: 0.2s; }
+    .custom-cb.checked { background: #07c160; border-color: #07c160; color: #fff; }
+    .icon-btn { background: #f4f5f9; border: none; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; justify-content: center; align-items: center; padding: 0; color: #666; }
+    .icon-btn-danger { color: #ff4d4f; background: #fff1f0; }
+    .sort-btn-group { display: flex; flex-direction: column; width: 28px; height: 28px; border-radius: 6px; overflow: hidden; background: #f4f5f9; }
+    .sort-btn { flex: 1; border: none; background: transparent; color: #666; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; }
+    
+    /* 长按透明层 */
+    .time-display { width: 100%; text-align: center; font-size: 12px; font-weight: bold; color: #07c160; pointer-events: none; -webkit-user-select: none; user-select: none; letter-spacing: -0.5px; transition: color 0.3s; }
+    .time-display.danger { color: #ff4d4f; background: rgba(255, 77, 79, 0.1); border-radius: 4px; }
+    input[type="time"].acc-time-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5; margin: 0; padding: 0; border: none; }
+    .invisible-clear-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🌾 王者农场专业务农</h1>
+  <div class="header-slogan">—— 要种菜，也要生活 ——</div>
+  <div class="card" style="display: flex; align-items: center; gap: 20px; padding: 16px 24px;">
+    <div style="font-size: 48px; line-height: 1; background: var(--primary-light); padding: 12px; border-radius: 50%;">🐢</div>
+    <div>
+      <h3 style="margin: 0; color: var(--primary); font-size: 20px">CJ凑字数</h3>
+      <p style="margin: 6px 0 0; font-size: 14px; color: var(--text-muted)">小红薯🍠 ID:1483848881</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header-flex" style="border-bottom: none; padding-bottom: 0;">
+      <h2>不极限排期器（摸🐟️版）</h2>
+    </div>
+
+    <div class="form-group">
+      <label>1. 植物总时长</label>
+      <div class="btn-group">
+        <button class="time-btn" onclick="setDuration(60, this)">1 小时</button>
+        <button class="time-btn" onclick="setDuration(480, this)">8 小时</button>
+        <button class="time-btn active" onclick="setDuration(960, this)">16 小时</button>
+        <button class="time-btn" onclick="setDuration(1920, this)">32 小时</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>2. 种下时间</label>
+      <div style="display: flex; gap: 8px;">
+        <input type="datetime-local" id="plantTime" onchange="runSimulation()" oninput="runSimulation()">
+        <button class="sync-btn" onclick="refreshTime()">刷新当前时间</button>
+      </div>
+    </div>
+
+    <div class="dnw-card">
+      <div class="dnw-header">
+        <span>🌙 勿扰时段 😴</span>
+        <label class="switch">
+          <input type="checkbox" id="dnw1_en" onchange="saveSwitchState(); runSimulation()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--primary); font-size: 13px; font-weight: bold; width: 30px;">开始</span>
+          <input type="datetime-local" id="dnw1_start" onchange="runSimulation()" oninput="runSimulation()">
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--danger); font-size: 13px; font-weight: bold; width: 30px;">结束</span>
+          <input type="datetime-local" id="dnw1_end" onchange="runSimulation()" oninput="runSimulation()">
+        </div>
+      </div>
+    </div>
+
+    <div class="dnw-card">
+      <div class="dnw-header">
+        <span>💼 勿扰时段 🐮🐴</span>
+        <label class="switch">
+          <input type="checkbox" id="dnw2_en" onchange="saveSwitchState(); runSimulation()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--primary); font-size: 13px; font-weight: bold; width: 30px;">开始</span>
+          <input type="datetime-local" id="dnw2_start" onchange="runSimulation()" oninput="runSimulation()">
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--danger); font-size: 13px; font-weight: bold; width: 30px;">结束</span>
+          <input type="datetime-local" id="dnw2_end" onchange="runSimulation()" oninput="runSimulation()">
+        </div>
+      </div>
+    </div>
+
+    <div id="resultPanel">
+      <h3 style="margin:0 0 10px 0; color:var(--primary); font-size: 16px;">✅ 推演结果 (实时刷新)</h3>
+      <div class="timeline" id="timelineList"></div>
+      
+      <div style="margin-top: 15px; display: flex; gap: 8px; align-items: center;">
+        <select class="acc-sync-select" id="timelineSyncSelect" style="flex: 1;">
+          <option value="">同步排期到账号...</option>
+        </select>
+        <button class="sync-btn" onclick="syncTimelineToAccount()">同步</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header-flex">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 20px;">📋</span>
+        <h2 style="color: #1976d2;">农场账号管家</h2>
+        <span id="accountCount" style="font-size: 12px; color: var(--text-muted); background: #f0f0f0; padding: 4px 12px; border-radius: 12px;">0 Accounts</span>
+      </div>
+      <span style="color: #999; font-size: 12px;">▼</span>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div style="display: flex; gap: 10px;">
+        <button class="ios-btn" style="background:#fafafa; color:#555;" onclick="exportToCSV()">📤 导出Excel</button>
+        <button class="ios-btn" style="background:#fafafa; color:#555;" onclick="document.getElementById('importFile').click()">📥 导入备份</button>
+        <input type="file" id="importFile" accept=".csv" style="display:none" onchange="importFromCSV(event)">
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="ios-btn btn-reset" onclick="resetDailyAll()">每日重置</button>
+        <button class="ios-btn btn-add" onclick="addNewAccount()">+</button>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <div class="account-table">
+        <div class="acc-tr" style="font-weight: bold; font-size: 13px; text-align: center; border-top: 1px solid #eee; border-bottom: 1px solid #eee; color: #333;">
+          <div class="acc-td">大区</div><div class="acc-td">名字</div><div class="acc-td">祝福</div><div class="acc-td">任务</div>
+          <div class="acc-td">作物</div>
+          <div class="acc-td">水1</div><div class="acc-td">水2</div><div class="acc-td" style="color:#2e7d32">水3</div><div class="acc-td" style="color:#2e7d32">水4</div><div class="acc-td" style="color:#2e7d32">水5</div>
+          <div class="acc-td" style="color:#d32f2f">收获</div>
+          <div class="acc-td">重</div><div class="acc-td">排</div><div class="acc-td">删</div>
+        </div>
+        <div id="accountListBody"></div>
+      </div>
+    </div>
+    <p style="text-align: center; font-size: 11px; color: #bbb; margin-top: 12px;">点击输入文字 | 点击时间修改 | 长按时间格子清空</p>
+  </div>
+
+  <div class="card" style="padding: 24px; background: linear-gradient(145deg, #ffffff, #f9f9f9);">
+    <div style="text-align: center; margin-bottom: 16px;">
+      <h3 style="margin: 0 0 6px 0; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;"><span style="font-size: 20px;">☕</span> 请作者喝杯咖啡。</h3>
+      <p style="margin: 0; font-size: 12px; color: var(--text-muted);">本工具完全免费，如果为你节省了时间，欢迎随意打赏</p>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 15px;">
+      <div style="flex: 1; min-width: 200px; padding: 16px 12px; background: white; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div style="font-size: 14px; font-weight: bold; color: #d84315; margin-bottom: 10px;">🍬 微信赞赏码</div>
+        <img src="reward.png" alt="微信赞赏" style="width: 120px; height: 120px; border-radius: 8px; border: 1px solid #f0f0f0;" onerror="this.style.display='none'">
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 14px; font-weight: bold;">或</div>
+      <div style="flex: 1; min-width: 200px; padding: 16px 12px; background: white; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <div style="font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 20px;">⚡ 爱发电平台</div>
+        <button onclick="window.open('https://ifdian.net/a/gzchenjin', '_blank')" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; width: 90%;">前往爱发电</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ================= 1. 初始化与设置 =================
+  let currentDuration = 960;
+  window.CLEAR_HOLD_TIME = 500;
+
+  window.onload = function() {
+    document.getElementById('dnw1_en').checked = localStorage.getItem('dnw1_active') === 'true';
+    document.getElementById('dnw2_en').checked = localStorage.getItem('dnw2_active') === 'true';
+    refreshTime(); 
+    renderAccountManager();
+  };
+
+  function saveSwitchState() {
+    localStorage.setItem('dnw1_active', document.getElementById('dnw1_en').checked);
+    localStorage.setItem('dnw2_active', document.getElementById('dnw2_en').checked);
+  }
+
+  function setDuration(mins, btn) {
+    currentDuration = mins;
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    runSimulation(); 
+  }
+
+  function refreshTime() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById("plantTime").value = now.toISOString().slice(0, 16);
+
+    let d = now.toISOString().slice(0, 11); // 今天的日期前缀 "YYYY-MM-DDT"
+    
+    // 算出一个明天的日期前缀，专门给跨夜的勿扰时间用
+    let tmr = new Date(now);
+    tmr.setDate(tmr.getDate() + 1);
+    let d_tmr = tmr.toISOString().slice(0, 11); 
+
+    // 获取保存的时分 (如果没有就用默认值)
+    let t1s = localStorage.getItem('d1s_t') || "00:30";
+    let t1e = localStorage.getItem('d1e_t') || "08:00";
+    document.getElementById("dnw1_start").value = d + t1s;
+    // 智能判定：如果结束早于开始(如23点到8点)，结束日期自动设为明天
+    document.getElementById("dnw1_end").value = (t1e < t1s ? d_tmr : d) + t1e;
+
+    let t2s = localStorage.getItem('d2s_t') || "09:00";
+    let t2e = localStorage.getItem('d2e_t') || "12:00";
+    document.getElementById("dnw2_start").value = d + t2s;
+    document.getElementById("dnw2_end").value = (t2e < t2s ? d_tmr : d) + t2e;
+
+    runSimulation(); 
+  }
+
+  function formatDisplayDate(date) {
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${mm}-${dd} ${hh}:${min}`;
+  }
+
+  // ================= 2. 核心推演引擎 =================
+  function runSimulation() {
+    const plantInput = document.getElementById("plantTime").value;
+    const container = document.getElementById("timelineList");
+    
+    if (!plantInput) { container.innerHTML = ''; return; }
+
+    // 🌟 每次推演时，只截取并静默保存后 5 位纯净的"时分" (例如 "08:00")
+    localStorage.setItem('d1s_t', document.getElementById('dnw1_start').value.slice(11, 16));
+    localStorage.setItem('d1e_t', document.getElementById('dnw1_end').value.slice(11, 16));
+    localStorage.setItem('d2s_t', document.getElementById('dnw2_start').value.slice(11, 16));
+    localStorage.setItem('d2e_t', document.getElementById('dnw2_end').value.slice(11, 16));
+
+    const maxWater = currentDuration / 3;
+    const unlockThreshold = maxWater * 0.9;
+    let simTime = new Date(plantInput);
+    
+    const dnw1_on = document.getElementById('dnw1_en').checked;
+    const dnw1_s = new Date(document.getElementById('dnw1_start').value).getTime();
+    const dnw1_e = new Date(document.getElementById('dnw1_end').value).getTime();
+
+    const dnw2_on = document.getElementById('dnw2_en').checked;
+    const dnw2_s = new Date(document.getElementById('dnw2_start').value).getTime();
+    const dnw2_e = new Date(document.getElementById('dnw2_end').value).getTime();
+
+    function checkDND(timeMs) {
+      if (dnw1_on && timeMs >= dnw1_s && timeMs < dnw1_e) return true;
+      if (dnw2_on && timeMs >= dnw2_s && timeMs < dnw2_e) return true;
+      return false;
+    }
+
+    let waterLeft = 0; 
+    let growthNeeded = currentDuration; 
+    let waterConsumedSinceLast = 0; 
+    let currentSegmentDryMins = 0; 
+    let waitThresholdMins = 0;     
+    let missedKillShotTime = null; 
+    
+    const events = [];
+
+    waterLeft = maxWater;
+    const initialBonus = maxWater / 4;
+    growthNeeded -= initialBonus;
+    
+    let initialTitle = "🌱 播种并首次浇水";
+    let initialDesc = `加满水，白送 ${Math.round(initialBonus)} 分钟加速`;
+    if (checkDND(simTime.getTime())) {
+      initialTitle += " <span style='font-size:12px; font-weight:normal; color:#666;'>(勿扰时段)</span>";
+      initialDesc += `<br><span style="color:#1976d2;">💡 种下的配套浇水无视勿扰限制</span>`;
+    }
+    events.push({ time: new Date(simTime), title: initialTitle, desc: initialDesc, type: "normal" });
+
+    let safeCounter = 0;
+
+    while (growthNeeded > 0 && safeCounter < 30000) {
+      safeCounter++;
+      simTime.setMinutes(simTime.getMinutes() + 1);
+      let currMs = simTime.getTime();
+
+      growthNeeded--; 
+
+      if (waterLeft > 0) { waterLeft--; waterConsumedSinceLast++; } 
+      else { currentSegmentDryMins++; }
+
+      if (growthNeeded <= 0) break; 
+
+      const theoreticalBonus = waterConsumedSinceLast / 4;
+      if (growthNeeded <= theoreticalBonus && waterLeft <= unlockThreshold && !missedKillShotTime) {
+        missedKillShotTime = new Date(simTime); 
+      }
+
+      if (!checkDND(currMs)) {
+        let nextMs = currMs + 60000; 
+        const btnClickable = (waterLeft <= unlockThreshold);
+        const needWaterNow = (waterLeft === 0);
+        const needTopUp = checkDND(nextMs) && waterLeft < maxWater;
+        const currentBonus = waterConsumedSinceLast / 4;
+        const killShot = (growthNeeded <= currentBonus);
+
+        if (killShot && !btnClickable) waitThresholdMins++;
+
+        if (btnClickable && (needWaterNow || needTopUp || killShot)) {
+          let bonus = waterConsumedSinceLast / 4;
+          growthNeeded -= bonus; 
+          
+          let title = killShot ? "🔥 终极秒熟收割" : (needTopUp ? "💤 勿扰前突击补水" : "💧 日常浇水");
+          let descParts = [`耗水 ${Math.round(waterConsumedSinceLast)} 分，奖励加速 ${Math.round(bonus)} 分`];
+
+          if (currentSegmentDryMins > 0) {
+            let punish = Math.round(currentSegmentDryMins * 0.2); 
+            descParts.push(`<span style="color:var(--danger); font-weight:bold;">⚠️ 期间缺水 ${currentSegmentDryMins} 分钟 (致使晚熟 ${punish} 分钟)</span>`);
+          }
+          if (waitThresholdMins > 0 && killShot) {
+            descParts.push(`<span style="color:var(--warning); font-weight:bold;">⏳ 卡门槛硬等了 ${waitThresholdMins} 分钟</span>`);
+          }
+          if (needTopUp && !needWaterNow && !killShot) {
+            descParts.push(`<span style="color:#1976d2;">💡 提前加满水应对勿扰时段</span>`);
+          }
+
+          events.push({ time: new Date(simTime), title: title, desc: descParts.join('<br>'), type: killShot ? "danger" : (currentSegmentDryMins > 0 ? "warning" : "normal") });
+
+          waterLeft = maxWater; waterConsumedSinceLast = 0; currentSegmentDryMins = 0; waitThresholdMins = 0; missedKillShotTime = null; 
+          if (killShot) break;
+        }
+      }
+    }
+
+    let actualMins = Math.round((simTime - new Date(plantInput)) / 60000);
+    let optimalMins = Math.round((currentDuration * 11) / 15);
+    let totalDelay = actualMins - optimalMins;
+
+    if (growthNeeded <= 0 && events[events.length-1].title !== "🔥 终极秒熟收割") {
+      let desc = `⏱️ 理论极速只需 ${optimalMins} 分钟<br>`;
+      desc += `<span style="color:var(--danger); font-weight:bold;">⚠️ 亏损：因未及时浇水，晚熟了 ${totalDelay} 分钟！</span>`;
+      if (missedKillShotTime) {
+        let savedMins = Math.round((simTime - missedKillShotTime) / 60000);
+        desc += `<br><span style="color:#1976d2; font-weight:bold; margin-top:4px; display:inline-block;">🎯 极限补救：若在 ${formatDisplayDate(missedKillShotTime)} 起床收割，可提前 ${savedMins} 分钟！</span>`;
+      }
+      events.push({ time: new Date(simTime), title: "🌾 挂机自然成熟", desc: desc, type: "danger" });
+    } 
+    else if (events.length > 0 && events[events.length-1].title === "🔥 终极秒熟收割") {
+      let lastEv = events[events.length-1];
+      if (totalDelay > 0) lastEv.desc += `<br><br>⏱️ 理论极速需 ${optimalMins} 分钟<br><span style="color:var(--danger); font-weight:bold;">⚠️ 亏损：受勿扰/缺水影响，晚熟了 ${totalDelay} 分钟！</span>`;
+      else lastEv.desc += `<br><br><span style="color:#07c160; font-weight:bold;">🏆 完美达成理论极速 (${optimalMins} 分钟)！0 损耗！</span>`;
+    }
+
+    window.currentTimelineEvents = events; 
+
+    container.innerHTML = '';
+    events.forEach(ev => {
+      container.innerHTML += `<div class="node ${ev.type}"><div class="time-label">${formatDisplayDate(ev.time)}</div><div style="font-weight:bold; font-size:15px; margin-top:2px;">${ev.title}</div><div style="color:#666; font-size:13px; margin-top:5px; line-height:1.6;">${ev.desc}</div></div>`;
+    });
+  }
+
+  // ================= 3. 账号管家核心 =================
+  window.accounts = JSON.parse(localStorage.getItem('farm_accounts') || '[]');
+
+  function isTimeDanger(targetTime, targetTs) {
+    if (!targetTime) return false;
+    const now = new Date();
+    if (targetTs) { return (targetTs - now.getTime()) / 60000 <= 30; }
+    const [h, m] = targetTime.split(':').map(Number);
+    let diff = (h * 60 + m) - (now.getHours() * 60 + now.getMinutes());
+    if (diff < -720) diff += 1440; if (diff > 720) diff -= 1440;  
+    return diff >= -480 && diff <= 30; 
+  }
+
+  window.clearTimer = null; window.clearFired = false;
+  function startClearPress(e, index, field) {
+    window.clearFired = false;
+    if (e.target) e.target.style.backgroundColor = "rgba(0, 0, 0, 0.08)";
+    if (navigator.vibrate) navigator.vibrate(1);
+    window.clearTimer = setTimeout(() => {
+      window.clearFired = true;
+      if (e.target) e.target.style.backgroundColor = "transparent";
+      updateAccField(index, field, '');
+      if (navigator.vibrate) navigator.vibrate(50); 
+    }, window.CLEAR_HOLD_TIME);
+  }
+  function cancelClearPress(e) {
+    if (window.clearTimer) { clearTimeout(window.clearTimer); window.clearTimer = null; }
+    if (e && e.target) e.target.style.backgroundColor = "transparent";
+  }
+  function handleClearClick(e) { e.stopPropagation(); if (window.clearFired) { e.preventDefault(); return false; } }
+
+  window.lpTimer = null; window.lpFired = false; 
+  function startTouch(e, index, field) {
+    window.lpFired = false; 
+    if (navigator.vibrate) navigator.vibrate(1);
+    window.lpTimer = setTimeout(() => {
+      window.lpFired = true; 
+      if (field === 'blessing') {
+        window.accounts[index].blessing = 0; saveAccs();
+        if (e && e.target) { e.target.value = 0; e.target.blur(); }
+        // 🌟 动态更新UI，绝不丢失焦点
+        const row = document.getElementById('accountListBody').children[index];
+        if (row) {
+          const isDone = window.accounts[index].taskDone && (parseInt(window.accounts[index].blessing) === 0);
+          if (isDone) row.classList.add('name-completed'); else row.classList.remove('name-completed');
+        }
+        if (navigator.vibrate) navigator.vibrate(50); 
+      }
+    }, window.CLEAR_HOLD_TIME);
+  }
+  function cancelTouch() { if (window.lpTimer) clearTimeout(window.lpTimer); window.lpTimer = null; }
+  function preventClickIfLongPress(e) { if (window.lpFired) { e.preventDefault(); e.stopPropagation(); return false; } }
+
+  function updateSyncDropdowns() {
+    const selects = document.querySelectorAll('.acc-sync-select');
+    const optionsHtml = '<option value="">同步排期到账号...</option>' + window.accounts.map(a => `<option value="${a.id}">${a.name || '未命名'}</option>`).join('');
+    selects.forEach(s => { const oldVal = s.value; s.innerHTML = optionsHtml; s.value = oldVal; });
+  }
+
+  function renderAccountManager() {
+    const listBody = document.getElementById('accountListBody');
+    if (!listBody) return;
+    document.getElementById('accountCount').innerText = window.accounts.length + " Accounts";
+    listBody.innerHTML = '';
+    updateSyncDropdowns();
+
+    window.accounts.forEach((acc, index) => {
+      const isDone = acc.taskDone && (parseInt(acc.blessing) === 0);
+      const row = document.createElement('div');
+      row.className = `acc-tr ${isDone ? 'name-completed' : ''}`;
+      
+      const genTimeHtml = (field, val, ts) => {
+        return `<div class="acc-td">
+          <div class="time-display ${isTimeDanger(val, ts) ? 'danger' : ''}">${val || '--:--'}</div>
+          <input type="time" class="acc-time-overlay" value="${val || ''}" oninput="updateAccField(${index}, '${field}', this.value, this)">
+          ${val ? `<div class="invisible-clear-layer" ontouchstart="startClearPress(event, ${index}, '${field}')" ontouchmove="cancelClearPress(event)" ontouchend="cancelClearPress(event)" onmousedown="startClearPress(event, ${index}, '${field}')" onmouseup="cancelClearPress(event)" onmouseleave="cancelClearPress(event)" onclick="handleClearClick(event)"></div>` : ''}
+        </div>`;
+      };
+
+      row.innerHTML = `
+        <div class="acc-td"><input value="${acc.area || ''}" oninput="updateAccField(${index}, 'area', this.value)"></div>
+        <div class="acc-td name-td"><input value="${acc.name || ''}" oninput="updateAccField(${index}, 'name', this.value)" placeholder="未命名"></div>
+        <div class="acc-td"><input type="number" style="color:#07c160;font-weight:bold" value="${acc.blessing}" oninput="updateAccField(${index}, 'blessing', this.value)" ontouchstart="startTouch(event, ${index}, 'blessing')" ontouchmove="cancelTouch()" ontouchend="cancelTouch()" onmousedown="startTouch(event, ${index}, 'blessing')" onmouseup="cancelTouch()" onmouseleave="cancelTouch()" onclick="return preventClickIfLongPress(event)"></div>
+        <div class="acc-td"><div class="custom-cb ${acc.taskDone ? 'checked' : ''}" onclick="toggleAccTask(${index})">✓</div></div>
+        <div class="acc-td fruit-td ${acc.fruit ? 'has-fruit' : ''}"><input value="${acc.fruit || ''}" oninput="updateAccField(${index}, 'fruit', this.value)"></div>
+        ${genTimeHtml('water1', acc.water1, acc.water1_ts)}
+        ${genTimeHtml('water2', acc.water2, acc.water2_ts)}
+        ${genTimeHtml('water3', acc.water3, acc.water3_ts)}
+        ${genTimeHtml('water4', acc.water4, acc.water4_ts)}
+        ${genTimeHtml('water5', acc.water5, acc.water5_ts)}
+        ${genTimeHtml('harvest', acc.harvest, acc.harvest_ts)}
+        <div class="acc-td"><button class="icon-btn" onclick="resetAccRow(${index})">↺</button></div>
+        <div class="acc-td"><div class="sort-btn-group"><button class="sort-btn" style="border-bottom:1px solid #fff;" onclick="moveAcc(${index},-1)">▲</button><button class="sort-btn" onclick="moveAcc(${index},1)">▼</button></div></div>
+        <div class="acc-td"><button class="icon-btn icon-btn-danger" onclick="deleteAcc(${index})">✕</button></div>
+      `;
+      listBody.appendChild(row);
+    });
+  }
+
+  function updateAccField(i, f, v, el) {
+    window.accounts[i][f] = v;
+    
+    // 🌟 时间类更新，直接操作 DOM
+    if (f.startsWith('water') || f === 'harvest') {
+      window.accounts[i][f + '_ts'] = null; saveAccs();
+      if (el) {
+        const td = el.parentElement;
+        const displayDiv = td.querySelector('.time-display');
+        if (displayDiv) { displayDiv.innerText = v || '--:--'; if(isTimeDanger(v, null)) displayDiv.classList.add('danger'); else displayDiv.classList.remove('danger'); }
+        let layer = td.querySelector('.invisible-clear-layer');
+        if (v && !layer) { td.insertAdjacentHTML('beforeend', `<div class="invisible-clear-layer" ontouchstart="startClearPress(event, ${i}, '${f}')" ontouchmove="cancelClearPress(event)" ontouchend="cancelClearPress(event)" onmousedown="startClearPress(event, ${i}, '${f}')" onmouseup="cancelClearPress(event)" onmouseleave="cancelClearPress(event)" onclick="handleClearClick(event)"></div>`); } 
+        else if (!v && layer) { layer.remove(); }
+      } else { renderAccountManager(); }
+      return;
+    }
+
+    saveAccs();
+    if (f === 'name') updateSyncDropdowns();
+    
+    // 🌟 核心修复：文字类更新，绝不重新渲染表格，防止焦点丢失！
+    const row = document.getElementById('accountListBody').children[i];
+    if (row) {
+      if (f === 'blessing') {
+        const isDone = window.accounts[i].taskDone && (parseInt(v) === 0);
+        if (isDone) row.classList.add('name-completed'); else row.classList.remove('name-completed');
+      }
+      if (f === 'fruit') {
+        const fruitTd = row.querySelector('.fruit-td');
+        if (v.trim() !== '') fruitTd.classList.add('has-fruit'); else fruitTd.classList.remove('has-fruit');
+      }
+    }
+  }
+
+  function toggleAccTask(i) { 
+    window.accounts[i].taskDone = !window.accounts[i].taskDone; 
+    saveAccs(); 
+    
+    // 动态更新打勾和整行变灰状态
+    const row = document.getElementById('accountListBody').children[i];
+    if (row) {
+      const cb = row.querySelector('.custom-cb');
+      if (window.accounts[i].taskDone) cb.classList.add('checked'); else cb.classList.remove('checked');
+      const isDone = window.accounts[i].taskDone && (parseInt(window.accounts[i].blessing) === 0);
+      if (isDone) row.classList.add('name-completed'); else row.classList.remove('name-completed');
+    }
+  }
+  
+  function resetDailyAll() { window.accounts.forEach(a => { a.blessing = 10; a.taskDone = false }); saveAccs(); renderAccountManager(); }
+  function resetAccRow(i) { window.accounts[i].water1 = ''; window.accounts[i].water2 = ''; window.accounts[i].water3 = ''; window.accounts[i].water4 = ''; window.accounts[i].water5 = ''; window.accounts[i].harvest = ''; saveAccs(); renderAccountManager(); }
+  function moveAcc(i, d) { const t = i + d; if (t >= 0 && t < window.accounts.length) { [window.accounts[i], window.accounts[t]] = [window.accounts[t], window.accounts[i]]; saveAccs(); renderAccountManager(); } }
+  
+  function addNewAccount() { 
+    window.accounts.push({ id: Date.now(), name: '', area: '', blessing: 10, taskDone: false, fruit: '', water1: '', water2: '', water3: '', water4: '', water5: '', harvest: '' }); 
+    saveAccs(); renderAccountManager(); 
+  }
+  
+  function deleteAcc(i) { if (confirm("确定删除此账号？")) { window.accounts.splice(i, 1); saveAccs(); renderAccountManager(); } }
+  function saveAccs() { localStorage.setItem('farm_accounts', JSON.stringify(window.accounts)); }
+
+  function syncTimelineToAccount() {
+    const accId = document.getElementById('timelineSyncSelect').value;
+    if (!accId || !window.currentTimelineEvents) return; 
+    const acc = window.accounts.find(a => a.id == accId);
+    
+    const actionEvs = window.currentTimelineEvents.filter(e => !e.title.includes("播种") && !e.title.includes("种下"));
+    const getStr = (dateObj) => `${String(dateObj.getHours()).padStart(2,'0')}:${String(dateObj.getMinutes()).padStart(2,'0')}`;
+    
+    if (actionEvs.length > 0) {
+      const harvestEv = actionEvs.pop(); 
+      acc.harvest = getStr(harvestEv.time);
+      acc.harvest_ts = harvestEv.time.getTime();
+    } else {
+      acc.harvest = ''; acc.harvest_ts = null;
+    }
+
+    for(let i = 1; i <= 5; i++) { acc[`water${i}`] = ''; acc[`water${i}_ts`] = null; }
+    
+    let slotIndex = 5;
+    for (let i = actionEvs.length - 1; i >= 0; i--) {
+      if (slotIndex >= 1) {
+        acc[`water${slotIndex}`] = getStr(actionEvs[i].time);
+        acc[`water${slotIndex}_ts`] = actionEvs[i].time.getTime();
+        slotIndex--;
+      }
+    }
+
+    saveAccs(); renderAccountManager(); document.getElementById('timelineSyncSelect').value = "";
+    alert("✅ 成功同步排期到账号：" + (acc.name || "未命名"));
+  }
+
+  // ================= 4. CSV 导入导出 =================
+  function formatExportTime(timeVal, ts) {
+    if (!timeVal) return '';
+    if (ts) { const d = new Date(ts); return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${timeVal}`; }
+    return timeVal;
+  }
+  
+  function exportToCSV() {
+    if (window.accounts.length === 0) return alert("当前无数据可导出！");
+    let csvContent = "\uFEFF大区,名字,祝福,任务(完成填1否则填0),作物,水1,水2,水3,水4,水5,收获\n";
+    window.accounts.forEach(a => {
+      let row = [ a.area||'', a.name||'', a.blessing||0, a.taskDone?'1':'0', a.fruit||'', 
+                  formatExportTime(a.water1, a.water1_ts), formatExportTime(a.water2, a.water2_ts), 
+                  formatExportTime(a.water3, a.water3_ts), formatExportTime(a.water4, a.water4_ts), formatExportTime(a.water5, a.water5_ts),
+                  formatExportTime(a.harvest, a.harvest_ts) ];
+      csvContent += row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",") + "\n";
+    });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `农场管家备份_${new Date().toISOString().slice(0,10)}.csv`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  }
+  
+  function parseCSVRow(str) {
+    const result = []; let current = '', inQuotes = false;
+    for (let i = 0; i < str.length; i++) {
+      let char = str[i];
+      if (inQuotes) { if (char === '"') { if (i + 1 < str.length && str[i + 1] === '"') { current += '"'; i++; } else { inQuotes = false; } } else { current += char; } } 
+      else { if (char === '"') inQuotes = true; else if (char === ',') { result.push(current); current = ''; } else current += char; }
+    }
+    result.push(current); return result;
+  }
+  
+  function parseImportTime(str) {
+    str = str.trim(); if (!str) return { val: '', ts: null };
+    if (str.includes("明天")) {
+      const match = str.match(/(\d{1,2}):(\d{1,2})/);
+      if (match) { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(parseInt(match[1]), parseInt(match[2]), 0, 0); return { val: `${String(match[1]).padStart(2,'0')}:${String(match[2]).padStart(2,'0')}`, ts: d.getTime() }; }
+    }
+    if (str.includes('/') || str.includes('-') || str.length > 5) {
+      const d = new Date(str.replace(/T/i, ' '));
+      if (!isNaN(d.getTime())) return { val: `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`, ts: d.getTime() };
+    }
+    const match = str.match(/(\d{1,2}):(\d{1,2})/);
+    if (match) return { val: `${String(match[1]).padStart(2,'0')}:${String(match[2]).padStart(2,'0')}`, ts: null };
+    return { val: '', ts: null };
+  }
+  
+  function importFromCSV(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const lines = e.target.result.split(/\r?\n/).filter(l => l.trim() !== '');
+      if (lines.length <= 1) { event.target.value = ''; return alert("❌ 文件为空或格式不正确！"); }
+      const newAccs = [];
+      for (let i = 1; i < lines.length; i++) {
+        const row = parseCSVRow(lines[i]); if (row.length < 8) continue; 
+        
+        let w1 = {val:'', ts:null}, w2 = {val:'', ts:null}, w3 = {val:'', ts:null}, w4 = {val:'', ts:null}, w5 = {val:'', ts:null}, hv = {val:'', ts:null};
+        
+        if (row.length === 8) {
+          w1 = parseImportTime(row[5]); w2 = parseImportTime(row[6]); hv = parseImportTime(row[7]);
+        } else if (row.length >= 11) { 
+          w1 = parseImportTime(row[5]); w2 = parseImportTime(row[6]); w3 = parseImportTime(row[7]);
+          w4 = parseImportTime(row[8]); w5 = parseImportTime(row[9]); hv = parseImportTime(row[10]);
+        }
+
+        newAccs.push({ 
+          id: Date.now() + i, area: row[0].trim(), name: row[1].trim(), blessing: parseInt(row[2]) || 0, taskDone: row[3].trim() === '1', fruit: row[4].trim(), 
+          water1: w1.val, water1_ts: w1.ts, water2: w2.val, water2_ts: w2.ts, 
+          water3: w3.val, water3_ts: w3.ts, water4: w4.val, water4_ts: w4.ts, water5: w5.val, water5_ts: w5.ts,
+          harvest: hv.val, harvest_ts: hv.ts 
+        });
+      }
+      if (newAccs.length > 0 && confirm(`📦 成功解析到 ${newAccs.length} 个账号！\n\n⚠️ 警告：导入将【完全覆盖】当前设备的所有数据。\n\n是否继续？`)) { window.accounts = newAccs; saveAccs(); renderAccountManager(); alert("✅ 数据导入成功！"); }
+      event.target.value = ''; 
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+</script>
+
+</body>
+</html>
